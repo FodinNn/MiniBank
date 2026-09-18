@@ -1,13 +1,18 @@
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.EntityFrameworkCore;
 using MiniBank.Api.Data;
 using Scalar.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using MiniBank.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 builder.Services.AddOpenApi();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
 var jwtSecret = builder.Configuration["Jwt:Secret"] 
                 ?? throw new InvalidOperationException("Jwt:Secret is not configured");
@@ -31,9 +36,7 @@ builder.Services
         };
     });
 builder.Services.AddAuthorization();
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
 

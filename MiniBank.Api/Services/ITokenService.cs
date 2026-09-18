@@ -1,6 +1,8 @@
+using MiniBank.Api.Models;
+
 namespace MiniBank.Api.Services;
 
-public class ITokenService
+public interface ITokenService
 {
-    
+    string GenerateToken(User user);
 }
