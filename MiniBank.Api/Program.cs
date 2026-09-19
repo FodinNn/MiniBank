@@ -5,6 +5,7 @@ using Scalar.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using MiniBank.Api.Endpoints;
 using MiniBank.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +46,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
+    app.MapAuthEndpoints();
 }
 
 app.UseHttpsRedirection();
