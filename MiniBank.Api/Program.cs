@@ -37,8 +37,10 @@ builder.Services
         };
     });
 builder.Services.AddAuthorization();
+
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 var app = builder.Build();
 
@@ -46,12 +48,13 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
-    app.MapAuthEndpoints();
 }
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapAuthEndpoints();
+app.MapAccountEndpoints();
 
 app.MapGet("/api/hello", () => new { status = "ok" });
 
