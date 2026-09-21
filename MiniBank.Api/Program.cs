@@ -15,7 +15,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
-var jwtSecret = builder.Configuration["Jwt:Secret"] 
+var jwtSecret = builder.Configuration["Jwt:Secret"]
                 ?? throw new InvalidOperationException("Jwt:Secret is not configured");
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
@@ -25,7 +25,7 @@ builder.Services
     .AddJwtBearer(options =>
     {
         options.MapInboundClaims = false;
-        
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -45,6 +45,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITransferService, TransferService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddSingleton<IRateService, RateService>();
 
 var app = builder.Build();
 
@@ -61,6 +62,7 @@ app.MapAuthEndpoints();
 app.MapAccountEndpoints();
 app.MapTransferEndpoints();
 app.MapTransactionEndpoints();
+app.MapRateEndpoints();
 
 app.MapGet("/api/hello", () => new { status = "ok" });
 

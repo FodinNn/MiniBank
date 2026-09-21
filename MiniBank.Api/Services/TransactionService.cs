@@ -7,7 +7,7 @@ namespace MiniBank.Api.Services;
 public class TransactionService : ITransactionService
 {
     private readonly AppDbContext _db;
-    
+
     public TransactionService(AppDbContext db) => _db = db;
 
     public async Task<List<TransactionResponse>> GetUserTransactionsAsync(int userId)

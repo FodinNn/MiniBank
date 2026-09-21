@@ -17,7 +17,5 @@ public static class TransactionEndpoints
             var transaction = await svc.GetUserTransactionsAsync(user.GetUserId());
             return Results.Ok(transaction);
         });
-
-
     }
 }

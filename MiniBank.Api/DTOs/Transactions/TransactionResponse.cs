@@ -8,4 +8,4 @@ public record TransactionResponse(
     string Currency,
     string Description,
     DateTime CreatedAt
-    );
+);

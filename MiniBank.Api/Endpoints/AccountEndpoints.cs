@@ -29,5 +29,12 @@ public static class AccountEndpoints
             var account = await svc.CreateAccountAsync(user.GetUserId(), requst);
             return Results.Created($"/api/accounts/{account.Id}", account);
         });
+
+        group.MapPost("/{id:int}/deposit",
+            async (int id, DepositRequest request, ClaimsPrincipal user, IAccountService svc) =>
+            {
+                var account = await svc.DepositAsync(user.GetUserId(), id, request.Amount);
+                return account is null ? Results.NotFound() : Results.Ok(account);
+            });
     }
 }

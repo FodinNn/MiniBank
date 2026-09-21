@@ -6,21 +6,22 @@ using MiniBank.Api.Models;
 
 namespace MiniBank.Api.Services;
 
-public class TokenService: ITokenService
+public class TokenService : ITokenService
 {
     private readonly string _secret;
     private readonly string _issuer;
     private readonly string _audience;
     private readonly int _expiresMinutes;
-    
+
     public TokenService(IConfiguration configuration)
     {
-        _secret = configuration["Jwt:Secret"] 
+        _secret = configuration["Jwt:Secret"]
                   ?? throw new InvalidOperationException("Jwt:Secret is not configured");
         _issuer = configuration["Jwt:Issuer"]!;
         _audience = configuration["Jwt:Audience"]!;
         _expiresMinutes = int.Parse(configuration["Jwt:ExpiresMinutes"]!);
     }
+
     public string GenerateToken(User user)
     {
         var claims = new[]
