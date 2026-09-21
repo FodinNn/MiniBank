@@ -44,6 +44,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITransferService, TransferService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 var app = builder.Build();
 
@@ -59,6 +60,7 @@ app.UseAuthorization();
 app.MapAuthEndpoints();
 app.MapAccountEndpoints();
 app.MapTransferEndpoints();
+app.MapTransactionEndpoints();
 
 app.MapGet("/api/hello", () => new { status = "ok" });
 
