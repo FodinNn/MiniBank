@@ -5,15 +5,26 @@
 
 ## Стек
 
-| Слой           | Технология               |
-| -------------- | ------------------------ |
-| Платформа      | .NET 10                  |
-| API            | ASP.NET Core Minimal API |
-| ORM            | EF Core 10 + Npgsql      |
-| БД             | PostgreSQL 16            |
-| Аутентификация | JWT (HS256)              |
-| Пароли         | BCrypt.Net-Next          |
-| Документация   | OpenAPI + Scalar         |
+**Backend**
+| Слой | Технология |
+|---|---|
+| Платформа | .NET 10 |
+| API | ASP.NET Core Minimal API |
+| ORM | EF Core 10 + Npgsql |
+| БД | PostgreSQL 16 (Docker) |
+| Аутентификация | JWT (HS256) |
+| Пароли | BCrypt.Net-Next |
+| Документация | OpenAPI + Scalar |
+
+**Frontend**
+| Слой | Технология |
+|---|---|
+| Фреймворк | React 18 + Vite + TypeScript |
+| Стили | Tailwind CSS + shadcn-style UI |
+| Роутинг | React Router v6 |
+| HTTP | Axios (интерсептор для Bearer + 401→logout) |
+| Иконки | Lucide React |
+| Графики | Recharts |
 
 ## Возможности
 
@@ -21,11 +32,14 @@
 - Создание счетов в RUB / USD / EUR
 - Пополнение счёта
 - Переводы между счетами с проверкой баланса и валюты
-- История транзакций - только свои
+- История транзакций — только свои
 - Курсы валют
+- Dashboard с графиками (динамика баланса, распределение по валютам)
 - Защита от IDOR и race condition
 
 ## Архитектура
+
+### Backend
 
 ```
 MiniBank.Api/
@@ -34,15 +48,27 @@ MiniBank.Api/
 ├── Endpoints/      Minimal API endpoints
 ├── Extensions/     ClaimsPrincipalExtensions
 ├── Migrations/     EF Core миграции
-├── Models/         EF Core сущности
+├── Models/         EF Core сущности (User, Account, Transaction)
 ├── Services/       бизнес-логика
 └── Program.cs      DI, middleware, конфиг
 ```
 
 - **Endpoints** — принимают запрос, вызывают сервис, возвращают результат
 - **Services** — валидация, работа с БД, транзакции
-- **Models** — User, Account, Transaction
+- **Models** — EF Core сущности
 - **DTOs** — отделяют API от внутренних моделей
+
+### Frontend
+
+```
+minibank-web/src/
+├── api/            axios-клиент, методы, типы
+├── components/     UI-компоненты, ProtectedRoute, CurrencyIcon, EmptyState
+├── contexts/       AuthContext (JWT в localStorage)
+├── layouts/        MainLayout (sidebar + header)
+├── lib/            утилиты (cn, формат, перевод ошибок)
+└── pages/          Login, Register, Dashboard, AccountDetail, Transfer, History, Rates
+```
 
 ## Модель данных
 
@@ -72,12 +98,16 @@ MiniBank.Api/
 
 ## Запуск
 
-Требования: .NET 10 SDK, Docker, `dotnet-ef`.
+### Требования
 
-```
-git clone <repo-url>
-cd MiniBank
+- .NET 10 SDK
+- Node.js 20+
+- Docker
+- EF Core tools: `dotnet tool install --global dotnet-ef`
 
+### Backend
+
+```bash
 docker compose up -d
 
 cd MiniBank.Api
@@ -85,8 +115,19 @@ dotnet ef database update
 dotnet run
 ```
 
-- Scalar UI — `/scalar/v1`
-- OpenAPI — `/openapi/v1.json`
+- Scalar UI - `http://localhost:5229/scalar/v1`
+- OpenAPI - `http://localhost:5229/openapi/v1.json`
+
+### Frontend
+
+```bash
+cd minibank-web
+npm install
+npm run dev
+```
+
+- Приложение — `http://localhost:5173`
+- API URL настраивается через `VITE_API_URL` (см. `.env.example`)
 
 ## Эндпоинты
 
@@ -124,19 +165,17 @@ dotnet run
 
 Регистрация:
 
-```
-curl -X POST https://localhost:5001/api/auth/register \
+```bash
+curl -X POST http://localhost:5229/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"Password123","fullName":"Иван"}' \
-  -k
+  -d '{"email":"user@example.com","password":"Password123","fullName":"Иван"}'
 ```
 
 Перевод:
 
-```
-curl -X POST https://localhost:5001/api/transfers \
+```bash
+curl -X POST http://localhost:5229/api/transfers \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
-  -d '{"fromAccountId":1,"toAccountId":2,"amount":100,"description":"Перевод"}' \
-  -k
+  -d '{"fromAccountId":1,"toAccountId":2,"amount":100,"description":"Перевод"}'
 ```
