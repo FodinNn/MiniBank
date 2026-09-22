@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using MiniBank.Api.Endpoints;
+using MiniBank.Api.Middleware;
 using MiniBank.Api.Services;
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -65,6 +66,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors("frontend");
 app.UseAuthentication();
