@@ -1,6 +1,6 @@
 # MiniBank
 
-Мини-банк на .NET 10 — REST API для счетов, переводов и истории транзакций.
+Мини-банк на .NET 10 - REST API для счетов, переводов и истории транзакций.
 Учебный проект: JWT-аутентификация, PostgreSQL через EF Core, транзакции БД.
 
 ## Стек
@@ -85,6 +85,10 @@ minibank-web/src/
 - Алгоритм HS256, секрет в `appsettings.Development.json`
 - Claims: `sub` (userId), `email`, `fullName`
 - `MapInboundClaims = false` — чтобы `sub` не маппился в `ClaimTypes.NameIdentifier`
+
+**IDOR**
+- Все операции фильтруются по `userId` из токена
+- На чужой счёт возвращаем **404**, а не 403 — чтобы не подтверждать существование ресурса
 
 **Пароли**
 - BCrypt с автоматической солью
