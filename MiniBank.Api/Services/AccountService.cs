@@ -8,26 +8,21 @@ namespace MiniBank.Api.Services;
 public class AccountService : IAccountService
 {
     private readonly AppDbContext _db;
+    private readonly ILogger<AccountService> _logger;
 
-    public AccountService(AppDbContext db)
+    public AccountService(AppDbContext db, ILogger<AccountService> logger)
     {
         _db = db;
+        _logger = logger;
     }
 
     public async Task<List<AccountResponse>> GetUserAccountsAsync(int userId)
     {
-        var accounts = await _db.Accounts
+        return await _db.Accounts
             .Where(a => a.UserId == userId)
-            .ToListAsync();
-
-        return accounts
             .Select(a => new AccountResponse(
-                a.Id,
-                a.Number,
-                a.Balance,
-                a.Currency,
-                a.CreatedAt))
-            .ToList();
+                a.Id, a.Number, a.Balance, a.Currency, a.CreatedAt))
+            .ToListAsync();
     }
 
     public async Task<AccountResponse?> GetAccountAsync(int userId, int accountId)
@@ -35,14 +30,15 @@ public class AccountService : IAccountService
         var account = await _db.Accounts
             .FirstOrDefaultAsync(a => a.Id == accountId && a.UserId == userId);
 
-        if (account is null) return null;
+        if (account is null)
+        {
+            _logger.LogWarning("Account {AccountId} not found or not owned by user {UserId}",
+                accountId, userId);
+            return null;
+        }
 
         return new AccountResponse(
-            account.Id,
-            account.Number,
-            account.Balance,
-            account.Currency,
-            account.CreatedAt);
+            account.Id, account.Number, account.Balance, account.Currency, account.CreatedAt);
     }
 
     public async Task<AccountResponse> CreateAccountAsync(int userId, CreateAccountRequest request)
@@ -61,25 +57,38 @@ public class AccountService : IAccountService
         _db.Accounts.Add(account);
         await _db.SaveChangesAsync();
 
+        _logger.LogInformation("Account created: {Number} {Currency} for user {UserId}",
+            account.Number, account.Currency, userId);
+
         return new AccountResponse(
-            account.Id,
-            account.Number,
-            account.Balance,
-            account.Currency,
-            account.CreatedAt);
+            account.Id, account.Number, account.Balance, account.Currency, account.CreatedAt);
     }
 
     public async Task<AccountResponse?> DepositAsync(int userId, int accountId, decimal amount)
     {
-        if (amount <= 0) return null;
+        if (amount <= 0)
+        {
+            _logger.LogWarning("Deposit failed: invalid amount {Amount}", amount);
+            return null;
+        }
 
         var account = await _db.Accounts
             .FirstOrDefaultAsync(a => a.Id == accountId && a.UserId == userId);
-        if (account is null) return null;
-        
+
+        if (account is null)
+        {
+            _logger.LogWarning("Deposit failed: account {AccountId} not found or not owned by user {UserId}",
+                accountId, userId);
+            return null;
+        }
+
         account.Balance += amount;
         await _db.SaveChangesAsync();
-        
-        return new AccountResponse(account.Id,  account.Number, account.Balance, account.Currency, account.CreatedAt);
+
+        _logger.LogInformation("Deposit completed: {Amount} to account {AccountId}, new balance {Balance}",
+            amount, account.Id, account.Balance);
+
+        return new AccountResponse(
+            account.Id, account.Number, account.Balance, account.Currency, account.CreatedAt);
     }
 }
