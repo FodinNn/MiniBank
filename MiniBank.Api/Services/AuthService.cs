@@ -9,17 +9,23 @@ public class AuthService : IAuthService
 {
     private readonly AppDbContext _db;
     private readonly ITokenService _tokenService;
+    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(AppDbContext db, ITokenService tokenService)
+    public AuthService(AppDbContext db, ITokenService tokenService, ILogger<AuthService> logger)
     {
         _db = db;
         _tokenService = tokenService;
+        _logger = logger;
     }
 
     public async Task<AuthResponse?> RegisterAsync(RegisterRequest request)
     {
         var exists = await _db.Users.AnyAsync(u => u.Email == request.Email);
-        if (exists) return null;
+        if (exists)
+        {
+            _logger.LogWarning("Registration failed: email {Email} already exists", request.Email);
+            return null;
+        }
 
         var hash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
@@ -35,6 +41,8 @@ public class AuthService : IAuthService
         await _db.SaveChangesAsync();
 
         var token = _tokenService.GenerateToken(user);
+        
+        _logger.LogInformation("User registered: {Email}", request.Email);
 
         return new AuthResponse(token, user.Email, user.FullName);
     }
@@ -42,12 +50,22 @@ public class AuthService : IAuthService
     public async Task<AuthResponse?> LoginAsync(LoginRequest request)
     {
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-        if (user == null) return null;
+        if (user is null)
+        {
+            _logger.LogWarning("Login failed: user {Email} not found", request.Email);
+            return null;
+        }
 
         var ok = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
-        if (!ok) return null;
+        if (!ok)
+        {
+            _logger.LogWarning("Login failed: invalid password for {Email}", request.Email);
+            return null;
+        }
 
         var token = _tokenService.GenerateToken(user);
+        
+        _logger.LogInformation("User logged in: {Email}", request.Email);
 
         return new AuthResponse(token, user.Email, user.FullName);
     }
