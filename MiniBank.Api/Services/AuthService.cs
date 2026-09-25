@@ -69,4 +69,28 @@ public class AuthService : IAuthService
 
         return new AuthResponse(token, user.Email, user.FullName);
     }
+
+    public async Task<bool> ChangePasswordAsync(int userId, ChangePasswordRequest request)
+    {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user is null)
+        {
+            _logger.LogWarning("Change password failed: user {UserId} not found", userId);
+            return false;
+        }
+
+        var ok = BCrypt.Net.BCrypt.Verify(request.OldPassword, user.PasswordHash);
+        if (!ok)
+        {
+            _logger.LogWarning("Change password failed: invalid old password for user {UserId}", userId);
+            return false;
+        }
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        await _db.SaveChangesAsync();
+
+        _logger.LogInformation("Password changed for user {UserId}", userId);
+
+        return true;
+    }
 }

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using MiniBank.Api.DTOs.Auth;
+using MiniBank.Api.Extensions;
 using MiniBank.Api.Services;
 
 namespace MiniBank.Api.Endpoints;
@@ -36,5 +37,16 @@ public static class AuthEndpoints
                 return Results.Ok(new { userId, email, fullName });
             })
             .RequireAuthorization();
+
+        group.MapPost("/change-password", async (
+            ChangePasswordRequest request,
+            ClaimsPrincipal user,
+            IAuthService authService) =>
+        {
+            var ok = await authService.ChangePasswordAsync(user.GetUserId(), request);
+            return ok
+                ? Results.Ok(new { message = "Password changed successfully" })
+                : Results.BadRequest(new { message = "invalid old password" });
+        });
     }
 }
