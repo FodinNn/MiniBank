@@ -48,5 +48,17 @@ public static class AuthEndpoints
                 ? Results.Ok(new { message = "Password changed successfully" })
                 : Results.BadRequest(new { message = "invalid old password" });
         });
+        
+        group.MapPut("/me", async (
+                UpdateProfileRequest request,
+                ClaimsPrincipal user,
+                IAuthService authService) =>
+            {
+                var response = await authService.UpdateProfileAsync(user.GetUserId(), request);
+                return response is null
+                    ? Results.NotFound(new { error = "User not found" })
+                    : Results.Ok(response);
+            })
+            .RequireAuthorization();
     }
 }

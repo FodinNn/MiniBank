@@ -93,4 +93,23 @@ public class AuthService : IAuthService
 
         return true;
     }
+
+    public async Task<AuthResponse?> UpdateProfileAsync(int userId, UpdateProfileRequest request)
+    {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user is null)
+        {
+            _logger.LogWarning("Update profile failed: user {UserId} not found", userId);
+            return null;
+        }
+        
+        user.FullName = request.FullName;
+        await _db.SaveChangesAsync();
+        
+        _logger.LogInformation("Profile updated: {UserId}", userId);
+        
+        var token = _tokenService.GenerateToken(user);
+        
+        return new AuthResponse(token, user.Email, user.FullName);
+    }
 }
