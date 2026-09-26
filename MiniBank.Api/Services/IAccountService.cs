@@ -6,4 +6,5 @@ public interface IAccountService
     Task<AccountResponse?> GetAccountAsync(int userId, int accountId);
     Task<AccountResponse> CreateAccountAsync(int userId, CreateAccountRequest request);
     Task<AccountResponse?> DepositAsync(int userId, int accountId, decimal amount);
+    Task<bool> DeleteAccountAsync(int userId, int accountId);
 }

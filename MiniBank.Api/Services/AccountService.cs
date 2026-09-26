@@ -91,4 +91,31 @@ public class AccountService : IAccountService
         return new AccountResponse(
             account.Id, account.Number, account.Balance, account.Currency, account.CreatedAt);
     }
+
+    public async Task<bool> DeleteAccountAsync(int userId, int accountId)
+    {
+        var account = await _db.Accounts
+            .FirstOrDefaultAsync(a => a.Id == accountId && a.UserId == userId);
+        
+        if (account is null)
+        {
+            _logger.LogWarning("Delete account failed: account {AccountId} not found or not owned by user {UserId}",
+                accountId, userId);
+            return false;
+        }
+
+        if (account.Balance != 0)
+        {
+            _logger.LogWarning("Delete account failed: account {AccountId} has non-zero balance {Balance}",
+            accountId, account.Balance);
+            return false;
+        }
+        
+        _db.Accounts.Remove(account);
+        await _db.SaveChangesAsync();
+        
+        _logger.LogInformation("Account deleted: {AccountId} for user {UserId}", accountId, userId);
+
+        return true;
+    }
 }

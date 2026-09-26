@@ -36,5 +36,13 @@ public static class AccountEndpoints
                 var account = await svc.DepositAsync(user.GetUserId(), id, request.Amount);
                 return account is null ? Results.NotFound() : Results.Ok(account);
             });
+
+        group.MapDelete("/{id:int}", async (int id, ClaimsPrincipal user, IAccountService svc) =>
+        {
+            var deleted = await svc.DeleteAccountAsync(user.GetUserId(), id);
+            return deleted 
+                ? Results.NoContent() 
+                : Results.NotFound(new { error = "Cannot delete account (not found, not owned, or non-zero balance)"});
+        });
     }
 }
