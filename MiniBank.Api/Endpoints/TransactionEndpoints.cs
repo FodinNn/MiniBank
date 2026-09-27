@@ -26,14 +26,14 @@ public static class TransactionEndpoints
             ITransactionService svc) =>
         {
             var filter = new TransactionFilter(
-                page ?? 1,
-                pageSize ?? 20,
-                from,
-                to,
-                currency,
-                type,
-                minAmount,
-                maxAmount);
+                Page: page ?? 1,
+                PageSize: pageSize ?? 20,
+                From: from,
+                To: to,
+                Currency: currency,
+                Type: type,
+                MinAmount: minAmount,
+                MaxAmount: maxAmount);
 
             var result = await svc.GetUserTransactionsAsync(user.GetUserId(), filter);
             return Results.Ok(result);
