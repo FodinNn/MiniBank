@@ -4,5 +4,5 @@ namespace MiniBank.Api.Services;
 
 public interface ITransactionService
 {
-    Task<List<TransactionResponse>> GetUserTransactionsAsync(int userId);
+    Task<TransactionListResponse> GetUserTransactionsAsync(int userId, TransactionFilter filter);
 }
