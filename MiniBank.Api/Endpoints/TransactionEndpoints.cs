@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text;
 using MiniBank.Api.DTOs.Transactions;
 using MiniBank.Api.Extensions;
 using MiniBank.Api.Services;
@@ -37,6 +38,31 @@ public static class TransactionEndpoints
 
             var result = await svc.GetUserTransactionsAsync(user.GetUserId(), filter);
             return Results.Ok(result);
+        });
+
+        group.MapGet("/export", async (
+            DateTime? from,
+            DateTime? to,
+            string? currency,
+            string? type,
+            ClaimsPrincipal user,
+            ITransactionService svc) =>
+        {
+            var filter = new TransactionFilter(
+                Page: 1,
+                PageSize: 10000,
+                From: from,
+                To: to,
+                Currency: currency,
+                Type: type);
+
+            var result = await svc.GetUserTransactionsAsync(user.GetUserId(), filter);
+            var csv = CsvExporter.Export(result.Items);
+
+            return Results.File(
+                Encoding.UTF8.GetBytes(csv),
+                "text/csv",
+                $"transactions-{DateTime.UtcNow:yyyy-MM-dd}.csv");
         });
     }
 }
