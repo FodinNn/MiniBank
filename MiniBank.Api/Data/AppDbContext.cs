@@ -34,9 +34,16 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Transaction>()
             .HasIndex(t => new { t.ToAccountId, t.CreatedAt });
+        
+        modelBuilder.Entity<Goal>()
+            .HasOne(g => g.User)
+            .WithMany()
+            .HasForeignKey(g => g.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     public DbSet<User> Users => Set<User>();
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
+    public DbSet<Goal> Goals => Set<Goal>();
 }
