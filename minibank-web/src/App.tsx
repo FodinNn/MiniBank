@@ -9,6 +9,7 @@ import { LoginPage } from '@/pages/LoginPage'
 import { GoalsPage } from '@/pages/GoalsPage'
 import { RatesPage } from '@/pages/RatesPage'
 import { RegisterPage } from '@/pages/RegisterPage'
+import { SettingsPage } from '@/pages/SettingsPage'
 import { TransferPage } from '@/pages/TransferPage'
 
 // Dashboard тянет за собой recharts — грузим лениво
@@ -50,6 +51,7 @@ export default function App() {
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/rates" element={<RatesPage />} />
         <Route path="/goals" element={<GoalsPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

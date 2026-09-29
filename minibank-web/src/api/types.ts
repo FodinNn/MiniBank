@@ -21,6 +21,15 @@ export interface MeResponse {
   fullName: string | null
 }
 
+export interface ChangePasswordRequest {
+  oldPassword: string
+  newPassword: string
+}
+
+export interface UpdateProfileRequest {
+  fullName: string
+}
+
 export interface Account {
   id: number
   number: string
