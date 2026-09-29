@@ -11,4 +11,6 @@ export const accountsApi = {
 
   deposit: (id: number, amount: number) =>
     api.post<Account>(`/api/accounts/${id}/deposit`, { amount }).then((r) => r.data),
+
+  remove: (id: number) => api.delete<void>(`/api/accounts/${id}`).then((r) => r.data),
 }

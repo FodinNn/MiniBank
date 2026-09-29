@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { isAxiosError } from 'axios'
-import { ArrowLeft, ArrowLeftRight, Plus, RefreshCw } from 'lucide-react'
+import { ArrowLeft, ArrowLeftRight, Plus, RefreshCw, Trash2 } from 'lucide-react'
 import { accountsApi } from '@/api/accounts'
 import { transactionsApi } from '@/api/transactions'
 import type { Account, Transaction } from '@/api/types'
@@ -15,6 +15,7 @@ import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatAccountNumber, formatDate, formatMoney } from '@/lib/format'
 import { getApiErrorMessage } from '@/lib/errors'
+import { DeleteAccountDialog } from './accounts/DeleteAccountDialog'
 
 export function AccountDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -25,6 +26,8 @@ export function AccountDetailPage() {
   const [notFound, setNotFound] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [depositOpen, setDepositOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const load = useCallback(async () => {
     if (!id) return
@@ -50,6 +53,19 @@ export function AccountDetailPage() {
   useEffect(() => {
     void load()
   }, [load])
+
+  const handleDelete = async (accountId: number) => {
+    setDeleting(true)
+    try {
+      await accountsApi.remove(accountId)
+      navigate('/')
+    } catch (err) {
+      // Пробрасываем наверх — текст покажет диалог
+      throw err instanceof Error ? err : new Error(getApiErrorMessage(err, 'Не удалось удалить счёт.'))
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   if (notFound) {
     return (
@@ -94,6 +110,15 @@ export function AccountDetailPage() {
               <ArrowLeftRight className="size-4" />
               Перевести
             </Link>
+          </Button>
+          <Button
+            variant="outline"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+            disabled={!account || deleting}
+            onClick={() => setDeleteOpen(true)}
+          >
+            <Trash2 className="size-4" />
+            Удалить
           </Button>
         </>
       }
@@ -155,6 +180,15 @@ export function AccountDetailPage() {
           open={depositOpen}
           onOpenChange={setDepositOpen}
           onDeposited={(updated) => setAccount(updated)}
+        />
+      )}
+
+      {account && (
+        <DeleteAccountDialog
+          account={account}
+          open={deleteOpen}
+          onOpenChange={setDeleteOpen}
+          onConfirm={handleDelete}
         />
       )}
     </Page>
