@@ -61,8 +61,45 @@ export interface Transaction {
   createdAt: string
 }
 
+export interface TransactionListResponse {
+  items: Transaction[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+export interface TransactionFilter {
+  page?: number
+  pageSize?: number
+  from?: string
+  to?: string
+  currency?: string
+  type?: string
+  minAmount?: number
+  maxAmount?: number
+}
+
 export interface Rate {
   from: string
   to: string
   rate: number
+}
+
+export interface Goal {
+  id: number
+  name: string
+  targetAmount: number
+  currentAmount: number
+  /** 0–100 */
+  progressPercent: number
+  deadline: string
+  createdAt: string
+  isCompleted: boolean
+}
+
+export interface CreateGoalRequest {
+  name: string
+  targetAmount: number
+  /** ISO date (YYYY-MM-DD) */
+  deadline: string
 }

@@ -84,6 +84,7 @@ app.MapAccountEndpoints();
 app.MapTransferEndpoints();
 app.MapTransactionEndpoints();
 app.MapRateEndpoints();
+app.MapGoalEndpoints();
 
 app.MapGet("/api/hello", () => new { status = "ok" });
 

@@ -6,6 +6,7 @@ import { MainLayout } from '@/layouts/MainLayout'
 import { AccountDetailPage } from '@/pages/AccountDetailPage'
 import { HistoryPage } from '@/pages/HistoryPage'
 import { LoginPage } from '@/pages/LoginPage'
+import { GoalsPage } from '@/pages/GoalsPage'
 import { RatesPage } from '@/pages/RatesPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 import { TransferPage } from '@/pages/TransferPage'
@@ -48,6 +49,7 @@ export default function App() {
         <Route path="/transfer" element={<TransferPage />} />
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/rates" element={<RatesPage />} />
+        <Route path="/goals" element={<GoalsPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -34,8 +34,10 @@ export function AccountDetailPage() {
     try {
       const acc = await accountsApi.get(Number(id))
       setAccount(acc)
-      const txs = await transactionsApi.list()
-      setTransactions(txs.filter((t) => t.fromAccountId === acc.id || t.toAccountId === acc.id))
+      const txList = await transactionsApi.list({ page: 1, pageSize: 200 })
+      setTransactions(
+        txList.items.filter((t) => t.fromAccountId === acc.id || t.toAccountId === acc.id),
+      )
     } catch (err) {
       if (isAxiosError(err) && err.response?.status === 404) {
         setNotFound(true)

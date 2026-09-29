@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   LogOut,
   Percent,
+  Target,
 } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/Avatar'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,7 @@ const navItems = [
   { to: '/transfer', label: 'Перевод', icon: ArrowLeftRight, end: false },
   { to: '/history', label: 'История', icon: History, end: false },
   { to: '/rates', label: 'Курсы валют', icon: Percent, end: false },
+  { to: '/goals', label: 'Цели', icon: Target, end: false },
 ]
 
 export function MainLayout() {

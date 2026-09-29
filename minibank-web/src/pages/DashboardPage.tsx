@@ -109,11 +109,11 @@ export function DashboardPage() {
     try {
       const [acc, tx, rt] = await Promise.all([
         accountsApi.list(),
-        transactionsApi.list(),
+        transactionsApi.list({ page: 1, pageSize: 200 }),
         ratesApi.list().catch(() => [] as Rate[]),
       ])
       setAccounts(acc)
-      setTransactions(tx)
+      setTransactions(tx.items)
       setRates(rt)
     } catch (err) {
       setError(getApiErrorMessage(err, 'Не удалось загрузить данные.'))

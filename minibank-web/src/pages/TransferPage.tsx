@@ -78,9 +78,10 @@ export function TransferPage() {
       })
     // Для блока «Последние переводы»; ошибка не должна ломать форму
     transactionsApi
-      .list()
-      .then((txs) => {
-        if (!cancelled) setTransfers(txs.filter((t) => t.fromAccountId !== null).slice(0, 4))
+      .list({ page: 1, pageSize: 10 })
+      .then((res) => {
+        if (!cancelled)
+          setTransfers(res.items.filter((t) => t.fromAccountId !== null).slice(0, 4))
       })
       .catch(() => {
         if (!cancelled) setTransfers([])

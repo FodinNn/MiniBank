@@ -24,6 +24,7 @@ const currencies = ['ALL', 'RUB', 'USD', 'EUR'] as const
 
 export function HistoryPage() {
   const [transactions, setTransactions] = useState<Transaction[] | null>(null)
+  const [total, setTotal] = useState(0)
   const [accounts, setAccounts] = useState<Account[]>([])
   const [error, setError] = useState<string | null>(null)
 
@@ -35,8 +36,12 @@ export function HistoryPage() {
     setError(null)
     setTransactions(null)
     try {
-      const [txs, accs] = await Promise.all([transactionsApi.list(), accountsApi.list()])
-      setTransactions(txs)
+      const [txList, accs] = await Promise.all([
+        transactionsApi.list({ page: 1, pageSize: 200 }),
+        accountsApi.list(),
+      ])
+      setTransactions(txList.items)
+      setTotal(txList.total)
       setAccounts(accs)
     } catch (err) {
       setError(getApiErrorMessage(err, 'Не удалось загрузить историю.'))
@@ -154,7 +159,7 @@ export function HistoryPage() {
             <>
               <TransactionList transactions={filtered} accounts={accounts} />
               <p className="mt-3 text-xs text-zinc-500">
-                Показано {filtered.length} из {transactions.length}
+                Показано {filtered.length} из {total || transactions.length}
               </p>
             </>
           )}

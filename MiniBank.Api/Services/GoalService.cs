@@ -55,7 +55,7 @@ public class GoalService : IGoalService
             Name = request.Name,
             TargetAmount = request.TargetAmount,
             CurrentAmount = 0,
-            Deadline = request.Deadline,
+            Deadline = DateTime.SpecifyKind(request.Deadline, DateTimeKind.Utc),
             CreatedAt = DateTime.UtcNow,
             IsCompleted = false,
             UserId = userId
