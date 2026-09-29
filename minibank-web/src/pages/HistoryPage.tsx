@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeftRight, RefreshCw, Search } from 'lucide-react'
+import { ArrowLeftRight, Download, Loader2, RefreshCw, Search } from 'lucide-react'
 import { accountsApi, transactionsApi } from '@/api'
 import type { Account, Transaction } from '@/api/types'
 import { EmptyState } from '@/components/EmptyState'
@@ -31,6 +31,7 @@ export function HistoryPage() {
   const [search, setSearch] = useState('')
   const [direction, setDirection] = useState<DirectionFilter>('all')
   const [currency, setCurrency] = useState<string>('ALL')
+  const [exporting, setExporting] = useState(false)
 
   const load = async () => {
     setError(null)
@@ -51,6 +52,33 @@ export function HistoryPage() {
   useEffect(() => {
     void load()
   }, [])
+
+  // Экспорт: направление конвертируем в type бэка (in → deposit, out → withdrawal)
+  const handleExport = async () => {
+    setExporting(true)
+    setError(null)
+    try {
+      const blob = await transactionsApi.exportCsv({
+        currency: currency !== 'ALL' ? currency : undefined,
+        type:
+          direction === 'in'
+            ? 'deposit'
+            : direction === 'out'
+              ? 'withdrawal'
+              : undefined,
+      })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `transactions-${new Date().toISOString().slice(0, 10)}.csv`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Не удалось выгрузить CSV.'))
+    } finally {
+      setExporting(false)
+    }
+  }
 
   const myAccountIds = useMemo(() => new Set(accounts.map((a) => a.id)), [accounts])
 
@@ -81,15 +109,27 @@ export function HistoryPage() {
       title="История"
       description="Все транзакции по вашим счетам"
       actions={
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => void load()}
-          title="Обновить"
-          aria-label="Обновить"
-        >
-          <RefreshCw className="size-4" />
-        </Button>
+        <>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void handleExport()}
+            disabled={exporting}
+            title="Скачать CSV"
+          >
+            {exporting ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
+            Экспорт CSV
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => void load()}
+            title="Обновить"
+            aria-label="Обновить"
+          >
+            <RefreshCw className="size-4" />
+          </Button>
+        </>
       }
     >
       <div className="space-y-6">
