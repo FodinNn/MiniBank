@@ -46,4 +46,5 @@ public class AppDbContext : DbContext
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
     public DbSet<Goal> Goals => Set<Goal>();
+    public DbSet<Budget> Budgets => Set<Budget>();
 }

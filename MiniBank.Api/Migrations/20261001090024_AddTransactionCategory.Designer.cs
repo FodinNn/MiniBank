@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MiniBank.Api.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MiniBank.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261001090024_AddTransactionCategory")]
+    partial class AddTransactionCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,34 +61,6 @@ namespace MiniBank.Api.Migrations
                         {
                             t.HasCheckConstraint("CK_Accounts_Balance_NonNegative", "\"Balance\" >= 0");
                         });
-                });
-
-            modelBuilder.Entity("MiniBank.Api.Models.Budget", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("MothlyLimit")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Budgets");
                 });
 
             modelBuilder.Entity("MiniBank.Api.Models.Goal", b =>
@@ -210,17 +185,6 @@ namespace MiniBank.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MiniBank.Api.Models.Budget", b =>
-                {
-                    b.HasOne("MiniBank.Api.Models.User", "User")
-                        .WithMany("Budgets")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("MiniBank.Api.Models.Goal", b =>
                 {
                     b.HasOne("MiniBank.Api.Models.User", "User")
@@ -235,8 +199,6 @@ namespace MiniBank.Api.Migrations
             modelBuilder.Entity("MiniBank.Api.Models.User", b =>
                 {
                     b.Navigation("Accounts");
-
-                    b.Navigation("Budgets");
                 });
 #pragma warning restore 612, 618
         }

@@ -8,11 +8,11 @@ public static class CsvExporter
     public static string Export(List<TransactionResponse> transactions)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("Date,FromAccountId,ToAccountId,Amount,Currency,Description");
+        sb.AppendLine("Date,FromAccountId,ToAccountId,Amount,Currency,Description,Category");
 
         foreach (var t in transactions)
         {
-            sb.AppendLine($"{t.CreatedAt:O},{t.FromAccountId},{t.ToAccountId},{t.Amount},{t.Currency},{Escape(t.Description)}");
+            sb.AppendLine($"{t.CreatedAt:O},{t.FromAccountId},{t.ToAccountId},{t.Amount},{t.Currency},{Escape(t.Description)}, {Escape(t.Category)}");
         }
         
         return sb.ToString();

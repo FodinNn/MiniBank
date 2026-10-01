@@ -7,5 +7,6 @@ public record TransactionResponse(
     decimal Amount,
     string Currency,
     string Description,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    string Category
 );

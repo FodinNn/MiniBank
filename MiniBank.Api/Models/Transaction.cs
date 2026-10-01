@@ -9,4 +9,5 @@ public class Transaction
     public string Currency { get; set; } = "";
     public string Description { get; set; } = "";
     public DateTime CreatedAt { get; set; }  = DateTime.UtcNow;
+    public string Category { get; set; } = "Прочее";
 }

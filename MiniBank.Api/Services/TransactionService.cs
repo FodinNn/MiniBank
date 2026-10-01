@@ -70,7 +70,8 @@ public class TransactionService : ITransactionService
                 t.Amount,
                 t.Currency,
                 t.Description,
-                t.CreatedAt))
+                t.CreatedAt,
+                t.Category))
             .ToListAsync();
 
         return new TransactionListResponse(items, total, page, pageSize);
