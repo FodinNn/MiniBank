@@ -75,7 +75,7 @@ namespace MiniBank.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("MothlyLimit")
+                    b.Property<decimal>("MonthlyLimit")
                         .HasColumnType("numeric");
 
                     b.Property<int>("UserId")

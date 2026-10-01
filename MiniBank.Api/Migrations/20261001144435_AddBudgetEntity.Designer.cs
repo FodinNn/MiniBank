@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MiniBank.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261001092230_AddBudgetEntity")]
+    [Migration("20261001144435_AddBudgetEntity")]
     partial class AddBudgetEntity
     {
         /// <inheritdoc />
@@ -78,7 +78,7 @@ namespace MiniBank.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("MothlyLimit")
+                    b.Property<decimal>("MonthlyLimit")
                         .HasColumnType("numeric");
 
                     b.Property<int>("UserId")
