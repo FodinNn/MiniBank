@@ -121,7 +121,7 @@ Account * ── * Transaction (через FromAccountId / ToAccountId)
 
 ## Запуск
 
-Самый быстрый путь — через `make`:
+Самый быстрый путь - через `make`:
 
 ```bash
 git clone <repo-url>
@@ -131,6 +131,7 @@ make up        # поднять PostgreSQL в Docker
 make migrate   # применить миграции (первый раз)
 make api       # запустить API в одном терминале
 make web       # запустить фронт в другом терминале
+```
 
 ## Эндпоинты
 
